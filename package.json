@@ -1,8 +1,15 @@
 {
   "name": "react-global-event-listener",
+  "description": "A higher order component for subscribing listeners to events",
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/react-global-event-listener.js",
+  "repository": "https://github.com/gzzo/react-global-event-listener",
+  "author": {
+    "name": "Guido Rainuzzo",
+    "email": "hi@guido.nyc",
+    "url": "https://guido.nyc"
+  },
   "devDependencies": {
     "@babel/core": "^7.1.1",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
@@ -14,8 +21,8 @@
     "webpack-cli": "^3.1.1"
   },
   "peerDependencies": {
-    "lodash": "^4.17.11",
-    "react": "^16.5.2"
+    "lodash": "^4.0.0",
+    "react": "^16.0.0"
   },
   "scripts": {
     "build": "webpack"
