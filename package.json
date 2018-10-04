@@ -1,10 +1,9 @@
 {
   "name": "react-global-event-listener",
   "description": "A higher order component for subscribing listeners to events",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "main": "dist/react-global-event-listener.js",
-  "module": "src/index.js",
   "repository": "https://github.com/gzzo/react-global-event-listener",
   "author": {
     "name": "Guido Rainuzzo",
