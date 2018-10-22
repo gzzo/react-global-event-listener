@@ -63,6 +63,9 @@ class GlobalEventListener extends React.Component {
 
     const {[funcKey]: func, ...newSubscriptions} = subscriptions
     if (_.isEmpty(newSubscriptions)) {
+      if (eventListener.hasOwnProperty('cancel')) {
+        eventListener.cancel();
+      }
       element.removeEventListener(eventName, eventListener)
     }
 
