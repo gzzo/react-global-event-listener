@@ -5,16 +5,10 @@ import GlobalEventListenerContext from './globalEventListenerContext'
 
 
 class GlobalEventListener extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      listeners: {},
-    }
-  }
+  listeners = {}
 
   componentWillUnmount() {
-    _.forEach(this.state.listeners, (eventNames, element) => {
+    _.forEach(this.listeners, (eventNames, element) => {
       _.forEach(eventNames, (eventHandler, eventName) => {
         if (eventHandler.eventListener) {
           element.removeEventListener(eventName, eventHandler.eventListener)
@@ -25,14 +19,14 @@ class GlobalEventListener extends React.Component {
 
   makeListener = (element, eventName) => {
     return (event) => {
-      _.forEach(this.state.listeners[element][eventName].subscriptions, subscriber => {
+      _.forEach(this.listeners[element][eventName].subscriptions, subscriber => {
         subscriber(event)
       })
     }
   }
 
   subscribeListener = (element, eventName, funcKey, func, {listenerWrapper = null} = {}) => {
-    let eventListener = _.get(this.state, `listeners.${element}.${eventName}.eventListener`)
+    let eventListener = _.get(this.listeners, `${element}.${eventName}.eventListener`)
 
     if (!eventListener) {
       const madeListener = this.makeListener(element, eventName)
@@ -40,26 +34,24 @@ class GlobalEventListener extends React.Component {
       element.addEventListener(eventName, eventListener)
     }
 
-    this.setState({
-      listeners: {
-        ...this.state.listeners,
-        [element]: {
-          ..._.get(this.state.listeners, element, {}),
-          [eventName]: {
-            ..._.get(this.state.listeners, [element, eventName], {}),
-            eventListener: eventListener,
-            subscriptions: {
-              ..._.get(this.state.listeners, [element, eventName, 'subscriptions'], {}),
-              [funcKey]: func,
-            }
+    this.listeners = {
+      ...this.listeners,
+      [element]: {
+        ..._.get(this.listeners, element, {}),
+        [eventName]: {
+          ..._.get(this.listeners, [element, eventName], {}),
+          eventListener: eventListener,
+          subscriptions: {
+            ..._.get(this.listeners, [element, eventName, 'subscriptions'], {}),
+            [funcKey]: func,
           }
         }
       }
-    })
+    }
   }
 
   unsubscribeListener = (element, eventName, funcKey) => {
-    const { subscriptions, eventListener } = this.state.listeners[element][eventName]
+    const { subscriptions, eventListener } = this.listeners[element][eventName]
 
     const {[funcKey]: func, ...newSubscriptions} = subscriptions
     if (_.isEmpty(newSubscriptions)) {
@@ -69,19 +61,17 @@ class GlobalEventListener extends React.Component {
       element.removeEventListener(eventName, eventListener)
     }
 
-    this.setState({
-      listeners: {
-        ...this.state.listeners,
-        [element]: {
-          ..._.get(this.state, `listeners.${element}`, {}),
-          [eventName]: {
-            ..._.get(this.state, `listeners.${element}.${eventName}`, {}),
-            subscriptions: newSubscriptions,
-            eventListener: _.isEmpty(newSubscriptions) ? null : eventListener,
-          }
+    this.listeners = {
+      ...this.listeners,
+      [element]: {
+        ..._.get(this.listeners, element, {}),
+        [eventName]: {
+          ..._.get(this.listeners, `${element}.${eventName}`, {}),
+          subscriptions: newSubscriptions,
+          eventListener: _.isEmpty(newSubscriptions) ? null : eventListener,
         }
       }
-    })
+    }
   }
 
   render() {
