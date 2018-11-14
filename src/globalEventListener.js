@@ -26,7 +26,7 @@ class GlobalEventListener extends React.Component {
   }
 
   subscribeListener = (element, eventName, funcKey, func, {listenerWrapper = null} = {}) => {
-    let eventListener = _.get(this.listeners, `${element}.${eventName}.eventListener`)
+    let eventListener = _.get(this.listeners, [element, eventName, 'eventListener'])
 
     if (!eventListener) {
       const madeListener = this.makeListener(element, eventName)
