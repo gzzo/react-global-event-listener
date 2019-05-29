@@ -58,7 +58,10 @@ class GlobalEventListener extends React.Component {
       if (eventListener.hasOwnProperty('cancel')) {
         eventListener.cancel();
       }
-      element.removeEventListener(eventName, eventListener)
+
+      if (element && element.removeEventListener) {
+        element.removeEventListener(eventName, eventListener)
+      }
     }
 
     this.listeners = {
