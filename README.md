@@ -19,9 +19,10 @@ npm install react-global-event-listener
 
 ## Use Case
 
-You want multiple components listening for events on the same element(s) but you don't want to eat the cost
-of adding *N* listeners for your *N* components.  `react-global-event-listener` creates just one listener per 
-`(element, event)` combination and dispatches the event to every subscribed component. 
+You want multiple components listening for events on the same element(s) using something like `_.debounce`
+or `_.throttle` but you don't want to eat the cost of creating *N* debounced listeners for your *N* components. 
+`react-global-event-listener` creates just one listener wrapped with your wrapper per `(element, event)` combination 
+and dispatches the event to every subscribed component.
 
 ## Example
 
@@ -35,6 +36,7 @@ class Feed extends React.Component {
     this.props.subscribeListener(
       window, 
       'scroll', 
+      'window.scroll',
       'Feed.onScroll', 
       this.onScroll,
       {listenerWrapper: _.partialRight(_.throttle, 200)}
@@ -44,7 +46,7 @@ class Feed extends React.Component {
   componentWillUnmount() {
     this.props.unsubscribeListener(
       window,
-      'scroll',
+      'window.scroll',
       'Feed.onScroll'
     )
   }
@@ -70,11 +72,11 @@ export default withGlobalEventListener(Feed)
 The component will be passed two function props:
 
 ```js
-function subscribeListener(element, eventName, funcKey, func, {listenerWrapper}) {}
+function subscribeListener(element, eventName, listenerKey, funcKey, func, {listenerWrapper}) {}
 ```
 
 ```js
-function unsubscribeListener(element, eventName, funcKey) {}
+function unsubscribeListener(element, listenerKey, funcKey) {}
 ```
 
 #### Arguments
@@ -83,8 +85,11 @@ function unsubscribeListener(element, eventName, funcKey) {}
 
 `eventName` - `string` - The [event](https://developer.mozilla.org/en-US/docs/Web/Events) to listen for
 
-`funcKey` - `string` - A key for the `func` that should be unique for all subscribers to the 
-`(element, eventName)` combination
+`funcKey` - `string` - A key for `element.eventName` that should be *the same* for all subscribers to the 
+`(element, eventName)` tuple. This helps us not store DOM elements in our lookup dictionary.
+
+`funcKey` - `string` - A key for the `func` that should be *unique* for all subscribers of the 
+`(element, eventName)` tuple. This is used for unsubscribing functions.
 
 `func` - `function` - The function you want to subscribe to the event.  Will be called with `event`.
 

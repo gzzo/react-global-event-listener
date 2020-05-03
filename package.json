@@ -1,7 +1,7 @@
 {
   "name": "react-global-event-listener",
   "description": "A higher order component for subscribing listeners to events",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "license": "MIT",
   "main": "dist/react-global-event-listener.js",
   "repository": "https://github.com/gzzo/react-global-event-listener",
@@ -26,6 +26,6 @@
     "react": ">=16.0.0"
   },
   "scripts": {
-    "build": "rollup"
+    "build": "rollup -c"
   }
 }

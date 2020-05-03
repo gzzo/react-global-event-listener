@@ -6,9 +6,9 @@ import GlobalEventListenerContext from "./globalEventListenerContext";
 class GlobalEventListener extends React.Component {
   listeners = {};
 
-  makeListener = (element, eventName) => {
+  makeListener = (element, listenerKey) => {
     return event => {
-      _.forEach(this.listeners[eventName].subscriptions, subscriber => {
+      _.forEach(this.listeners[listenerKey].subscriptions, subscriber => {
         subscriber(event);
       });
     };
@@ -17,14 +17,15 @@ class GlobalEventListener extends React.Component {
   subscribeListener = (
     element,
     eventName,
+    listenerKey,
     funcKey,
     func,
     { listenerWrapper = null } = {}
   ) => {
-    let eventListener = _.get(this.listeners, [eventName, "eventListener"]);
+    let eventListener = _.get(this.listeners, [listenerKey, "eventListener"]);
 
     if (!eventListener) {
-      const madeListener = this.makeListener(element, eventName);
+      const madeListener = this.makeListener(element, listenerKey);
       eventListener = listenerWrapper
         ? listenerWrapper(madeListener)
         : madeListener;
@@ -33,19 +34,20 @@ class GlobalEventListener extends React.Component {
 
     this.listeners = {
       ...this.listeners,
-      [eventName]: {
-        ..._.get(this.listeners, eventName, {}),
+      [listenerKey]: {
+        ..._.get(this.listeners, listenerKey, {}),
         eventListener: eventListener,
+        eventName: eventName,
         subscriptions: {
-          ..._.get(this.listeners, [eventName, "subscriptions"], {}),
+          ..._.get(this.listeners, [listenerKey, "subscriptions"], {}),
           [funcKey]: func
         }
       }
     };
   };
 
-  unsubscribeListener = (element, eventName, funcKey) => {
-    const { subscriptions, eventListener } = this.listeners[eventName];
+  unsubscribeListener = (element, listenerKey, funcKey) => {
+    const { subscriptions, eventListener, eventName } = this.listeners[listenerKey];
 
     const { [funcKey]: func, ...newSubscriptions } = subscriptions;
     if (_.isEmpty(newSubscriptions)) {
@@ -60,7 +62,7 @@ class GlobalEventListener extends React.Component {
 
     this.listeners = {
       ...this.listeners,
-      [eventName]: {
+      [listenerKey]: {
         ..._.get(this.listeners, eventName, {}),
         subscriptions: newSubscriptions,
         eventListener: _.isEmpty(newSubscriptions) ? null : eventListener
